@@ -1,0 +1,272 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xs:schema
+  targetNamespace="http://www.tecan.com/worktable/v4"
+  elementFormDefault="qualified"
+  xmlns="http://www.tecan.com/worktable/v4"
+  xmlns:t="http://www.tecan.com/worktable/v4"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="WorktableDefinition" type="WorktableDefinition">
+        <xs:unique name="FeatureTemplateTemplateNames">
+            <xs:selector xpath=".//t:FeatureTemplate" />
+            <xs:field xpath="@Name" />
+        </xs:unique>
+        <xs:unique name="SiteTemplateNames">
+            <xs:selector xpath=".//t:SiteTemplate" />
+            <xs:field xpath="@Name" />
+        </xs:unique>
+        <xs:unique name="TemplateNames">
+            <xs:selector xpath=".//t:Template" />
+            <xs:field xpath="@Name" />
+        </xs:unique>
+        <xs:keyref name="FeaturesMustReferToExistingFeatureTemplates" refer="FeatureTemplateTemplateNames">
+            <xs:selector xpath=".//t:Feature" />
+            <xs:field xpath="@FeatureTemplate" />
+        </xs:keyref>
+        <xs:keyref name="SitesMustReferToExistingSiteTemplates" refer="SiteTemplateNames">
+            <xs:selector xpath=".//t:Site" />
+            <xs:field xpath="@SiteTemplate" />
+        </xs:keyref>
+        <xs:keyref name="InstancesMustReferToExistingTemplates" refer="TemplateNames">
+            <xs:selector xpath=".//t:Instance" />
+            <xs:field xpath="@Template" />
+        </xs:keyref>
+    </xs:element>
+
+    <xs:complexType name="WorktableDefinition">
+        <xs:sequence>
+            <xs:element name="TemplateDefinitions" type="TemplateDefinitions" />
+            <xs:element name="Worktable" type="Worktable" />
+            <xs:element name="Instances" type="Instances" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="TemplateDefinitions">
+        <xs:sequence>
+            <xs:element name="FeatureTemplates" type="FeatureTemplates"/>
+            <xs:element name="SiteTemplates" type="SiteTemplates" />
+            <xs:element name="Templates" type="Templates" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="SiteTemplates">
+        <xs:sequence>
+            <xs:element name="SiteTemplate" type="SiteTemplate" minOccurs="1" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="SiteTemplate">
+        <xs:sequence>
+            <xs:element name="SiteRect" type="Rectangle" />
+            <xs:element name="Tags" type="Tags" />
+            <xs:element name="Features" type="Features" />
+        </xs:sequence>
+        <xs:attribute name="Id" type="xs:string" default=""/>
+        <xs:attribute name="Name" type="xs:string" use="required" />
+    </xs:complexType>
+
+    <xs:complexType name="FeatureTemplates">
+        <xs:sequence>
+            <xs:element name="FeatureTemplate" type="FeatureTemplate" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="FeatureTemplate">
+        <xs:sequence>
+            <xs:any namespace="##any" processContents="skip" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="Id" type="xs:string" default="" />
+        <xs:attribute name="Type" type="xs:string" use="required" />
+        <xs:attribute name="Name" type="xs:string" use="required" />
+    </xs:complexType>
+
+    <xs:complexType name="Templates">
+        <xs:sequence>
+            <xs:element name="Template" type="Template" minOccurs="1" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Template">
+    <xs:sequence>
+      <xs:element name="BoundingBoxSets" type="BoundingBoxSets"/>
+      <xs:element name="GroundRect" type="Rectangle" />
+      <xs:element name="Height" type="PositiveDouble" />
+      <xs:element name="Sites" type="Sites" />
+      <xs:element name="Tags" type="Tags" />
+      <xs:element name="Features" type="Features" />
+    </xs:sequence>
+    <xs:attribute name="Id" type="xs:string" default="" />
+    <xs:attribute name="Name" type="xs:string" use="required" />
+    <xs:attribute name="LogicalType" type="xs:string" use="required" />
+  </xs:complexType>
+
+    <xs:complexType name="Worktable">
+        <xs:sequence>
+            <xs:element name="GroundRect" type="Rectangle" />
+            <xs:element name="Sites" type="Sites" />
+            <xs:element name="Tags" type="Tags" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Instances">
+        <xs:sequence>
+            <xs:element name="Instance" type="Instance" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Instance">
+        <xs:sequence>
+            <xs:element name="ParentSite" type="ParentSite" />
+            <xs:element name="Orientation" type="InstanceOrientationEnum" />
+        </xs:sequence>
+        <xs:attribute name="Name" type="xs:string" use="required" />
+        <xs:attribute name="Template" type="xs:string" use="required" />
+    </xs:complexType>
+
+    <xs:simpleType name="InstanceOrientationEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Normal" />
+            <xs:enumeration value="Flipped" />
+        </xs:restriction>
+    </xs:simpleType>
+
+  <xs:complexType name="Rectangle">
+    <xs:attribute name="Width" type="PositiveDouble" use="required" />
+    <xs:attribute name="Depth" type="PositiveDouble" use="required" />
+  </xs:complexType>
+
+    <xs:complexType name="Vector3D">
+        <xs:attribute name="X" type="xs:double" use="required" />
+        <xs:attribute name="Y" type="xs:double" use="required" />
+        <xs:attribute name="Z" type="xs:double" use="required" />
+    </xs:complexType>
+
+    <xs:complexType name="BoundingBoxSize">
+        <xs:attribute name="Width" type="xs:double" use="required" />
+        <xs:attribute name="Depth" type="xs:double" use="required" />
+        <xs:attribute name="Height" type="xs:double" use="required" />
+    </xs:complexType>
+
+    <xs:complexType name="BoundingBoxOffset">
+        <xs:attribute name="X" type="xs:double" use="required" />
+        <xs:attribute name="Y" type="xs:double" use="required" />
+        <xs:attribute name="Z" type="xs:double" use="required" />
+        <xs:attribute name="Reference" type="Reference2D" use="required" />
+    </xs:complexType>
+
+    <xs:complexType name="Tags">
+        <xs:sequence>
+            <xs:element name="Tag" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="BoundingBox">
+        <xs:sequence>
+            <xs:element name="Dimensions" type="BoundingBoxSize" />
+            <xs:element name="Offset" type="BoundingBoxOffset" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="BoundingBoxSet">
+        <xs:sequence>
+            <xs:element name="BoundingBox" type="BoundingBox" minOccurs="1" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="Name" type="xs:string" use="required" />
+        <xs:attribute name="IsDefault" type="xs:boolean" use="required" />
+    </xs:complexType>
+
+    <xs:complexType name="BoundingBoxSets">
+        <xs:sequence>
+            <xs:element name="BoundingBoxSet" type="BoundingBoxSet" minOccurs="1" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Sites">
+        <xs:sequence>
+            <xs:element name="Site" type="Site" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Site">
+        <xs:sequence>
+            <xs:element name="PositionOffset" type="SitePositionOffset"  minOccurs="1"/>
+            <xs:element name="Rotation" type="xs:double" />
+            <xs:element name="InheritableConnectors" type="InheritableConnectors" minOccurs="0" maxOccurs="1" />
+            <xs:element name="Connectors" type="Connectors" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="SiteTemplate" type="xs:string" />
+        <xs:attribute name="Name" type="xs:string" />
+        <xs:attribute name="MaxInstallationHeight" type="xs:string" use="optional" />
+    </xs:complexType>
+
+
+    <xs:complexType name="Connectors">
+        <xs:sequence>
+            <xs:element name="Connector" type="Connector" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="Connector">
+        <xs:sequence>
+            <xs:element name="AcceptedTemplate" type="xs:string" />
+            <xs:element name="Displacement" type="Vector3D" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="InheritableConnectors">
+        <xs:sequence>
+            <xs:element name="InheritableConnector" type="InheritableConnector" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="InheritableConnector">
+        <xs:sequence>
+            <xs:element name="AcceptedTemplate" type="xs:string" />
+            <xs:element name="ZOffset" type="xs:double" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Features" >
+        <xs:sequence>
+            <xs:element name="Feature" type="Feature" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Feature">
+        <xs:attribute name="FeatureTemplate" type="xs:string" use="required" />
+    </xs:complexType>
+
+    <xs:complexType name="ParentSite">
+        <xs:attribute name="Name" type="xs:string" use="required" />
+    </xs:complexType>
+
+    <xs:complexType name="SitePositionOffset">
+        <xs:attribute name="Reference" type="Reference2D" use="required" />
+        <xs:attribute name="ParentReference" type="Reference3D" use="required" />
+        <xs:attribute name="X" type="xs:double" use="required" />
+        <xs:attribute name="Y" type="xs:double" use="required" />
+        <xs:attribute name="Z" type="xs:double" use="required" />
+    </xs:complexType>
+
+
+    <xs:simpleType name="Reference2D">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="CenterCenter" />
+            <xs:enumeration value="LeftFront" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Reference3D">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="CenterCenterTop" />
+            <xs:enumeration value="LeftFrontTop" />
+        </xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:simpleType name="PositiveDouble">
+        <xs:restriction base="xs:double">
+            <xs:minInclusive value="0.001" />
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>
