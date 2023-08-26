@@ -16,10 +16,6 @@ const port = 3000
  */
 function activate(context) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "worktable-buddy" is now active!');
-
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
@@ -32,7 +28,7 @@ function activate(context) {
 	context.subscriptions.push(disposable);
 }
 
-function startRestApi(){
+function startRestApi() {
 
 	app.use(bodyParser.json())
 	app.use(
@@ -47,12 +43,14 @@ function startRestApi(){
 
 	app.post('/', (request, response) => {
 		let message = `Received message ${request.body.message}`;
-		vscode.window.showInformationMessage( message );
+		vscode.window.showInformationMessage(message);
 		response.json({ info: 'So far so good!' })
 	})
 
 	app.listen(port, () => {
-		console.log(`Worktable Buddy is listening on port ${port}.`)
+		// Use the console to output diagnostic information (console.log) and errors (console.error)
+		// This line of code will only be executed once when your extension is activated
+		console.log(`Congratulations, your Worktable Buddy is now active and listening on port ${port}.`)
 	})
 }
 
