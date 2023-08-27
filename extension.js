@@ -21,7 +21,7 @@ function activate(context) {
 	// The commandId parameter must match the command field in package.json
 	let disposable = vscode.commands.registerCommand('worktable-buddy.helloWorld', function () {
 		// The code you place here will be executed every time your command is executed
-		startRestApi();
+		startRestApi()
 
 	});
 
@@ -42,8 +42,10 @@ function startRestApi() {
 	})
 
 	app.post('/', (request, response) => {
-		let message = `Received message ${request.body.message}`;
-		vscode.window.showInformationMessage(message);
+		let infoMsg = `Received message ${request.body.message}`
+		vscode.window.showInformationMessage(infoMsg)
+		let lineNumber = getLineNumber(request.body.message)
+		focusLine(lineNumber)
 		response.json({ info: 'So far so good!' })
 	})
 
@@ -52,6 +54,20 @@ function startRestApi() {
 		// This line of code will only be executed once when your extension is activated
 		console.log(`Congratulations, your Worktable Buddy is now active and listening on port ${port}.`)
 	})
+}
+
+function getLineNumber(message) {
+	let document = vscode.window.activeTextEditor.document;
+	let index = document.getText().indexOf(message);
+	let lineNumber = document.positionAt(index).line;
+	return lineNumber + 1;
+}
+
+function focusLine(lineNumber) {
+	let editor = vscode.window.activeTextEditor;
+	let range = editor.document.lineAt(lineNumber - 1).range;
+	editor.selection = new vscode.Selection(range.start, range.end);
+	editor.revealRange(range, vscode.TextEditorRevealType.InCenter);
 }
 
 // This method is called when your extension is deactivated
